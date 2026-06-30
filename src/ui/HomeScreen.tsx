@@ -1,17 +1,9 @@
 import React, { useCallback } from 'react';
-import {
-  View,
-  Text,
-  Switch,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  Platform,
-} from 'react-native';
-import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import { View, Text, Switch, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { AlarmSettings, normalizeSettings, saveSettings } from '../lib/settings';
 import { PUZZLES } from '../lib/puzzles';
+import { TimeField } from './TimeField';
 
 const MAX_PLIES = Math.max(...PUZZLES.map((p) => p.plies));
 
@@ -21,13 +13,6 @@ export type HomeScreenProps = {
   onStartPreview: () => void;
 };
 
-// Construct a Date from hour/minute (date portion is irrelevant for time picker)
-function toDate(hour: number, minute: number): Date {
-  const d = new Date();
-  d.setHours(hour, minute, 0, 0);
-  return d;
-}
-
 export function HomeScreen({ settings, onSettingsChange, onStartPreview }: HomeScreenProps) {
   const commit = useCallback(
     (patch: Partial<AlarmSettings>) => {
@@ -36,14 +21,6 @@ export function HomeScreen({ settings, onSettingsChange, onStartPreview }: HomeS
       onSettingsChange(next);
     },
     [settings, onSettingsChange],
-  );
-
-  const handleTimeChange = useCallback(
-    (_event: DateTimePickerEvent, date?: Date) => {
-      if (!date) return;
-      commit({ hour: date.getHours(), minute: date.getMinutes() });
-    },
-    [commit],
   );
 
   const pliesLabels: Record<number, string> = { 1: '1手', 3: '3手', 5: '5手' };
@@ -65,13 +42,10 @@ export function HomeScreen({ settings, onSettingsChange, onStartPreview }: HomeS
       {/* ── 時刻ピッカー ── */}
       <View style={styles.section}>
         <Text style={styles.label}>起床時刻</Text>
-        <DateTimePicker
-          value={toDate(settings.hour, settings.minute)}
-          mode="time"
-          is24Hour={true}
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          onChange={handleTimeChange}
-          style={styles.timePicker}
+        <TimeField
+          hour={settings.hour}
+          minute={settings.minute}
+          onChange={(hour, minute) => commit({ hour, minute })}
         />
       </View>
 
@@ -184,10 +158,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: '600',
-  },
-  timePicker: {
-    marginTop: 4,
-    alignSelf: 'flex-start',
   },
   sliderHeader: {
     flexDirection: 'row',
