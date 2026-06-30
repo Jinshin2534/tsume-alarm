@@ -10,6 +10,8 @@ import {
   type SessionState,
 } from '../lib/session';
 import type { AlarmSettings } from '../lib/settings';
+
+const MAX_PLIES = Math.max(...PUZZLES.map((p) => p.plies));
 import { startAlarmLoop, stopAlarmLoop } from '../lib/sound';
 import { SolveBoard } from './SolveBoard';
 
@@ -28,8 +30,8 @@ function shuffleInPlace(arr: Puzzle[]): Puzzle[] {
 }
 
 export function SolvingScreen({ settings, onFinished }: Props) {
-  const [session, setSession] = useState<SessionState>(() =>
-    createSession(
+  const [session, setSession] = useState<SessionState>(() => {
+    let s = createSession(
       {
         minPlies: settings.minPlies,
         maxPlies: settings.maxPlies,
@@ -37,8 +39,19 @@ export function SolvingScreen({ settings, onFinished }: Props) {
       },
       PUZZLES,
       shuffleInPlace,
-    ),
-  );
+    );
+    // Safety fallback: if a previously-persisted bad setting produced an empty pool,
+    // widen to the full puzzle range so the alarm cannot soft-lock.
+    // This preserves "must solve to stop" — it widens the puzzle set, it does NOT skip/dismiss.
+    if (currentPuzzle(s) === null) {
+      s = createSession(
+        { minPlies: 1, maxPlies: MAX_PLIES, requiredCorrect: settings.requiredCorrect },
+        PUZZLES,
+        shuffleInPlace,
+      );
+    }
+    return s;
+  });
 
   // Keep a ref to the alarm player so cleanup always has the latest handle.
   const playerRef = useRef<AudioPlayer | null>(null);

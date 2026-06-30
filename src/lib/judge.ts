@@ -7,7 +7,8 @@ export type JudgeResult =
   | { status: 'wrong' }
   | { status: 'continue'; defenderReply: Move };
 
-/** 玉方手番で最長抵抗の応手。既に詰みなら null。 */
+/** 玉方手番で最長抵抗の応手。既に詰みなら null。
+ * Precondition: callers ensure a forced mate exists (plies >= 1). */
 export function bestDefense(pos: ImmutablePosition, plies: number): Move | null {
   const moves = generateMoves(pos);
   if (moves.length === 0) return null;

@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { View, Text, Modal, Pressable, StyleSheet } from 'react-native';
 import { Position, Color, Move, PieceType, Square } from 'tsshogi';
 import { judgeMove } from '../lib/judge';
+import { generateMoves } from '../lib/moves';
 import { destinationsFrom } from './boardModel';
 import { Board } from './Board';
 import { Hand } from './Hand';
@@ -31,7 +32,23 @@ export function SolveBoard({ puzzleSfen, requiredPliesForPuzzle, onSolved, onWro
 
   // Compute highlights from current selection
   const highlights: Square[] =
-    selection.kind === 'square' ? destinationsFrom(pos, selection.from) : [];
+    selection.kind === 'square'
+      ? destinationsFrom(pos, selection.from)
+      : selection.kind === 'drop'
+        ? (() => {
+            // Legal drop squares for the selected piece type
+            const seen = new Set<string>();
+            return generateMoves(pos)
+              .filter((m) => typeof m.from === 'string' && m.pieceType === selection.pt)
+              .map((m) => m.to)
+              .filter((sq) => {
+                const key = sq.index.toString();
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+              });
+          })()
+        : [];
 
   const selectedFrom: Square | null =
     selection.kind === 'square' ? selection.from : null;

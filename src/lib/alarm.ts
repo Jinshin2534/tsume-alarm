@@ -4,6 +4,7 @@ import type { AlarmSettings } from './settings';
 /**
  * Pure function: returns the next Date at hour:minute.
  * If that time is still ahead today, returns today's date; otherwise rolls over to tomorrow.
+ * Note: pure utility for display/testing only — NOT used by scheduleAlarm (which relies on the DAILY trigger).
  */
 export function nextTriggerDate(now: Date, hour: number, minute: number): Date {
   const d = new Date(now);

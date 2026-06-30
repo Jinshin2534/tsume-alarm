@@ -11,6 +11,9 @@ import {
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import Slider from '@react-native-community/slider';
 import { AlarmSettings, normalizeSettings, saveSettings } from '../lib/settings';
+import { PUZZLES } from '../lib/puzzles';
+
+const MAX_PLIES = Math.max(...PUZZLES.map((p) => p.plies));
 
 export type HomeScreenProps = {
   settings: AlarmSettings;
@@ -43,7 +46,7 @@ export function HomeScreen({ settings, onSettingsChange, onStartPreview }: HomeS
     [commit],
   );
 
-  const pliesLabels: Record<number, string> = { 1: '1手', 3: '3手', 5: '5手', 7: '7手', 9: '9手' };
+  const pliesLabels: Record<number, string> = { 1: '1手', 3: '3手', 5: '5手' };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -81,16 +84,16 @@ export function HomeScreen({ settings, onSettingsChange, onStartPreview }: HomeS
         <Slider
           style={styles.slider}
           minimumValue={1}
-          maximumValue={9}
+          maximumValue={MAX_PLIES}
           step={2}
-          value={settings.minPlies}
-          onSlidingComplete={(v) => commit({ minPlies: Math.round(v) })}
+          value={Math.min(settings.minPlies, MAX_PLIES)}
+          onSlidingComplete={(v) => commit({ minPlies: Math.min(Math.round(v), MAX_PLIES) })}
           minimumTrackTintColor="#4a90d9"
           maximumTrackTintColor="#ccc"
           accessibilityLabel="最小手数"
         />
         <View style={styles.sliderTicks}>
-          {[1, 3, 5, 7, 9].map((n) => (
+          {Array.from({ length: Math.floor((MAX_PLIES - 1) / 2) + 1 }, (_, i) => 1 + i * 2).map((n) => (
             <Text key={n} style={styles.tickLabel}>{n}</Text>
           ))}
         </View>
@@ -105,16 +108,16 @@ export function HomeScreen({ settings, onSettingsChange, onStartPreview }: HomeS
         <Slider
           style={styles.slider}
           minimumValue={1}
-          maximumValue={9}
+          maximumValue={MAX_PLIES}
           step={2}
-          value={settings.maxPlies}
-          onSlidingComplete={(v) => commit({ maxPlies: Math.round(v) })}
+          value={Math.min(settings.maxPlies, MAX_PLIES)}
+          onSlidingComplete={(v) => commit({ maxPlies: Math.min(Math.round(v), MAX_PLIES) })}
           minimumTrackTintColor="#4a90d9"
           maximumTrackTintColor="#ccc"
           accessibilityLabel="最大手数"
         />
         <View style={styles.sliderTicks}>
-          {[1, 3, 5, 7, 9].map((n) => (
+          {Array.from({ length: Math.floor((MAX_PLIES - 1) / 2) + 1 }, (_, i) => 1 + i * 2).map((n) => (
             <Text key={n} style={styles.tickLabel}>{n}</Text>
           ))}
         </View>
