@@ -1,3 +1,7 @@
+// AsyncStorage is only used by the I/O wrappers at the bottom of this file;
+// the normalize* logic above them stays pure (no runtime dependency on it).
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 export type AlarmSettings = {
   hour: number;
   minute: number;
@@ -51,7 +55,6 @@ export function normalizeSettings(input: unknown): AlarmSettings {
 }
 
 // 永続化 I/O（AsyncStorage）— 純粋部は normalizeSettings に集約。
-import AsyncStorage from '@react-native-async-storage/async-storage';
 const KEY = 'tsume-alarm/settings';
 
 export async function loadSettings(): Promise<AlarmSettings> {
