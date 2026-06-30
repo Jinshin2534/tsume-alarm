@@ -132,7 +132,10 @@ export function SolveBoard({ puzzleSfen, requiredPliesForPuzzle, onSolved, onWro
         visible={promotionModal !== null}
         transparent
         animationType="fade"
-        onRequestClose={() => setPromotionModal(null)}
+        onRequestClose={() => {
+          // 成る/不成の選択は必須。Android のバックボタン等で中途半端に
+          // 閉じると局面と選択状態が食い違うため、ここでは何もしない（逃げ道なし）。
+        }}
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalBox}>
