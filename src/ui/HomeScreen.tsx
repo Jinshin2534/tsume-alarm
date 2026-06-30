@@ -129,7 +129,7 @@ export function HomeScreen({ settings, onSettingsChange, onStartPreview }: HomeS
         <View style={styles.counterRow}>
           <TouchableOpacity
             style={styles.counterBtn}
-            onPress={() => commit({ requiredCorrect: Math.max(1, settings.requiredCorrect - 1) })}
+            onPress={() => commit({ requiredCorrect: settings.requiredCorrect - 1 })}
             accessibilityLabel="正解数を減らす"
           >
             <Text style={styles.counterBtnText}>−</Text>
@@ -137,7 +137,7 @@ export function HomeScreen({ settings, onSettingsChange, onStartPreview }: HomeS
           <Text style={styles.counterValue}>{settings.requiredCorrect}問</Text>
           <TouchableOpacity
             style={styles.counterBtn}
-            onPress={() => commit({ requiredCorrect: Math.min(20, settings.requiredCorrect + 1) })}
+            onPress={() => commit({ requiredCorrect: settings.requiredCorrect + 1 })}
             accessibilityLabel="正解数を増やす"
           >
             <Text style={styles.counterBtnText}>＋</Text>
