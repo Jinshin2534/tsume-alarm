@@ -21,3 +21,26 @@ test('a non-checking / non-mating move is wrong', () => {
   const r = judgeMove(pos, idle, 1);
   expect(r.status).toBe('wrong');
 });
+
+// k8/2S6/9/9/9/9/9/9/8K b GG 1 — verified mate-in-3 (solver.test.ts/verify.test.ts).
+// Exercises the 'continue' path: the correct first move keeps a forced mate but
+// does not mate immediately, so judge returns a real defenderReply; playing it
+// out then reaches 'solved'.
+const SFEN3 = 'k8/2S6/9/9/9/9/9/9/8K b GG 1';
+
+test('correct first move of a 3-ply mate returns continue with a defender reply', () => {
+  const pos = Position.newBySFEN(SFEN3)!;
+  const first = matingFirstMoves(pos, 3)[0];
+  const r = judgeMove(pos, first, 3);
+  expect(r.status).toBe('continue');
+  if (r.status !== 'continue') return;
+  expect(r.defenderReply).toBeTruthy();
+
+  // Play user move + defender reply, then the next correct move must solve.
+  const next = pos.clone();
+  next.doMove(first);
+  next.doMove(r.defenderReply);
+  const second = matingFirstMoves(next, 1)[0];
+  const r2 = judgeMove(next, second, 1);
+  expect(r2.status).toBe('solved');
+});

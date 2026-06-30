@@ -47,6 +47,8 @@ export function judgeMove(
   if (resist === null) return { status: 'wrong' }; // この手では詰まない＝逸れた
 
   const reply = bestDefense(afterUser, remainingPlies - 1);
+  // unreachable: the defenderMoves.length===0 case is handled above, so
+  // bestDefense always finds a move here. Kept as a defensive fallback.
   if (!reply) return { status: 'solved' };
   return { status: 'continue', defenderReply: reply };
 }
