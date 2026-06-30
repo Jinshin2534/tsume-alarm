@@ -1,0 +1,39 @@
+import * as Notifications from 'expo-notifications';
+import type { AlarmSettings } from './settings';
+
+/**
+ * Pure function: returns the next Date at hour:minute.
+ * If that time is still ahead today, returns today's date; otherwise rolls over to tomorrow.
+ */
+export function nextTriggerDate(now: Date, hour: number, minute: number): Date {
+  const d = new Date(now);
+  d.setHours(hour, minute, 0, 0);
+  if (d.getTime() <= now.getTime()) d.setDate(d.getDate() + 1);
+  return d;
+}
+
+export async function requestNotificationPermission(): Promise<boolean> {
+  const { status } = await Notifications.requestPermissionsAsync();
+  return status === 'granted';
+}
+
+export async function cancelAllAlarms(): Promise<void> {
+  await Notifications.cancelAllScheduledNotificationsAsync();
+}
+
+export async function scheduleAlarm(settings: AlarmSettings): Promise<string | null> {
+  await cancelAllAlarms();
+  if (!settings.enabled) return null;
+  return Notifications.scheduleNotificationAsync({
+    content: {
+      title: '詰将棋目覚まし',
+      body: 'タップして詰将棋を解こう',
+      sound: 'default',
+    },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.DAILY,
+      hour: settings.hour,
+      minute: settings.minute,
+    },
+  });
+}

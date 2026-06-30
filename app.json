@@ -23,7 +23,15 @@
     },
     "plugins": [
       "expo-audio",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#ffffff",
+          "sounds": []
+        }
+      ]
     ]
   }
 }
