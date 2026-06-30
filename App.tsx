@@ -3,6 +3,7 @@ import { SafeAreaView } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import { HomeScreen } from './src/ui/HomeScreen';
 import { SolvingScreen } from './src/ui/SolvingScreen';
+import { ResultScreen } from './src/ui/ResultScreen';
 import { AlarmSettings, loadSettings } from './src/lib/settings';
 import { scheduleAlarm } from './src/lib/alarm';
 
@@ -54,7 +55,9 @@ export default function App() {
       {screen === 'solving' && (
         <SolvingScreen settings={settings} onFinished={() => setScreen('result')} />
       )}
-      {/* result は Task 14 で接続 */}
+      {screen === 'result' && (
+        <ResultScreen onClose={() => setScreen('home')} />
+      )}
     </SafeAreaView>
   );
 }
