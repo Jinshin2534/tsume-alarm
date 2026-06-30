@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import { HomeScreen } from './src/ui/HomeScreen';
+import { SolvingScreen } from './src/ui/SolvingScreen';
 import { AlarmSettings, loadSettings } from './src/lib/settings';
 import { scheduleAlarm } from './src/lib/alarm';
 
@@ -50,7 +51,10 @@ export default function App() {
           onStartPreview={() => setScreen('solving')}
         />
       )}
-      {/* solving / result は Task 13/14 で接続 */}
+      {screen === 'solving' && (
+        <SolvingScreen settings={settings} onFinished={() => setScreen('result')} />
+      )}
+      {/* result は Task 14 で接続 */}
     </SafeAreaView>
   );
 }
