@@ -21,3 +21,13 @@ test('pawn-drop mate is illegal: solver does not count it as mate', () => {
   const pos = Position.newBySFEN('k8/9/1SN6/9/9/9/9/9/8K b P 1')!;
   expect(mateInPlies(pos, 1)).toBeNull();
 });
+
+test('multi-ply (3-ply) AND/OR recursion: k8/2S6/9/9/9/9/9/9/8K b GG 1', () => {
+  // 後手玉9一、先手銀8三、先手2金持ち。最短詰みは3手。
+  // 1手詰はない（王手しても玉が逃げられる手が残る）。
+  // mateInPlies(pos, 5) は最短3手を返す（余分な深さで上書きしない）。
+  const pos = Position.newBySFEN('k8/2S6/9/9/9/9/9/9/8K b GG 1')!;
+  expect(mateInPlies(pos, 1)).toBeNull();
+  expect(mateInPlies(pos, 3)).toBe(3);
+  expect(mateInPlies(pos, 5)).toBe(3);
+});
